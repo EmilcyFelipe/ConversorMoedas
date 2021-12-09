@@ -1,45 +1,76 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, StatusBar, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import BarInput from './src/components/barInput';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
+import api from './src/services/api'
 
 
 export default function App() {
-  const [currencyElements, setCurrencyElements] = useState([]);
+  
+  const [currencyElementsActive, setCurrencyElementsActive] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [ currencyList, setCurrencyList ] = useState([]);
 
-  const currencyItems = currencyElements.map(()=>(<BarInput/>));
 
+  useEffect(()=>{
+    async function loadCurrency(){
+      const response = await api.get('all');
+      let listCurrency = [];
+      Object.keys(response.data).map((key)=>{
+        listCurrency.push({
+          key: key,
+          label: key,
+          value: response.data[key].ask,
+        })
+      });
+      setCurrencyList(listCurrency);
+    }
+    loadCurrency();
+    setLoading(false);
+  },[]);
+
+  
+  const currencyItems = currencyElementsActive.map((item, index)=>(<BarInput key={index} cList={currencyList}/>));
+  
   function addCurrency(){
-    setCurrencyElements([...currencyElements,'item'])
+    setCurrencyElementsActive([...currencyElementsActive,'item'])
   }
   function subtract(){
-    let items = Array.from(currencyElements);
+    let items = Array.from(currencyElementsActive);
     items.pop();
-    setCurrencyElements(items);
+    setCurrencyElementsActive(items);
   }
-  return (
-    <View style={styles.container}>
-      <View style={styles.logoWrapper}>
-        <FontAwesome name="balance-scale" size={80} color="#CBCBCB" />
+
+  if(loading){
+    return(
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+         <ActivityIndicator size="large" color="#00ff00" />
       </View>
-      <View style={styles.elementsWrapper}>
-        <BarInput/>
-        {currencyItems}
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.addItem} onPress={addCurrency}>
-            <Ionicons name="add-circle-outline" size={50} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.addItem} onPress={subtract}>
-            <AntDesign name="minuscircleo" size={40} color="white" />
-          </TouchableOpacity>
+    )
+  }else{
+    return (
+      <View style={styles.container}>
+        <StatusBar hidden={true}/>
+        <View style={styles.logoWrapper}>
+          <FontAwesome name="balance-scale" size={80} color="#CBCBCB" />
+        </View>
+        <View style={styles.elementsWrapper}>
+         { currencyList.length>0 && <BarInput cList={currencyList}/>}
+          {currencyItems}
+          <View style={styles.actions}>
+            <TouchableOpacity style={styles.addItem} onPress={addCurrency}>
+              <Ionicons name="add-circle-outline" size={50} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.addItem} onPress={subtract}>
+              <AntDesign name="minuscircleo" size={40} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-      
-      <StatusBar style="auto" />
-    </View>
-  );
+    );
+  }
+ 
 }
 
 const styles = StyleSheet.create({

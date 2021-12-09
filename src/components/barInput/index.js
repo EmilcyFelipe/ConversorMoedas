@@ -1,15 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-ico-flags';
 
 
-export default function BarInput(){
-    const [currency, setCurrency] = useState([{label:"Real", value:"real"},{label:"Dolar", value:"dolar"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"},{label:"Euro", value:"euro"}]);
+export default function BarInput({cList}){
+    
+    const [currency, setCurrency] = useState(cList);
     const [selectedCurrency, setSelectedCurrency] = useState();
     const pickerRef = useRef();
+    const [ convertedCurrency, setConvertedCurrency ] = useState(null);
 
-    const moedas = currency.map((item)=>(<Picker.Item  color='#cbcbcb' key={item.label} label={item.label} value={item.value}/>))
+    useEffect(()=>{
+        console.log(currency);
+    },[]);
+   
+    const moedas = currency.map((item)=>(<Picker.Item  color='#cbcbcb' key={item.label} label={item.label} value={item.value}/>));
     return(
         <View style={styles.container}>
             {selectedCurrency==='Real' && <Icon name='slovenia'/>}
@@ -26,7 +32,7 @@ export default function BarInput(){
             >
                 {moedas}
             </Picker>
-            <TextInput keyboardType='numeric' style={styles.input}/>
+            <TextInput keyboardType='numeric' value={convertedCurrency} style={styles.input}/>
 
         </View>
     );
@@ -42,7 +48,8 @@ const styles = StyleSheet.create({
         marginTop: 30,
         flexDirection: 'row',
         alignItems: 'center',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        paddingHorizontal:10
     },
     input:{
         backgroundColor: 'red',
