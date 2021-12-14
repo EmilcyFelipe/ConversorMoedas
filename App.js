@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, StatusBar, ActivityIndicator } from 'react-native';
+import { 
+  StyleSheet,
+  TouchableOpacity,
+  View, 
+  StatusBar, 
+  ActivityIndicator,
+  ScrollView
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import BarInput from './src/components/barInput';
+import MirrorsConvert from './src/components/mirrorsConvert'
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import api from './src/services/api'
 
@@ -11,6 +19,7 @@ export default function App() {
   const [currencyElementsActive, setCurrencyElementsActive] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ currencyList, setCurrencyList ] = useState([]);
+  const [ realValue, setRealValue ] = useState(null);
 
 
   useEffect(()=>{
@@ -24,6 +33,14 @@ export default function App() {
           value: response.data[key].ask,
         })
       });
+      listCurrency.push({
+        key: 'BRL',
+        label: 'BRL',
+        value: 1,
+      })
+      listCurrency.sort(function(a,b){
+        return(a.key>b.key)? 1 : ((b.key > a.key)? -1 : 0);
+      })
       setCurrencyList(listCurrency);
     }
     loadCurrency();
@@ -31,7 +48,9 @@ export default function App() {
   },[]);
 
   
-  const currencyItems = currencyElementsActive.map((item, index)=>(<BarInput key={index} cList={currencyList}/>));
+  const currencyItems = currencyElementsActive.map((item, index)=>(
+  <MirrorsConvert key={index} cList={currencyList} realValue={realValue} modifyRealValue={setRealValue}/>
+  ));
   
   function addCurrency(){
     setCurrencyElementsActive([...currencyElementsActive,'item'])
@@ -55,8 +74,8 @@ export default function App() {
         <View style={styles.logoWrapper}>
           <FontAwesome name="balance-scale" size={80} color="#CBCBCB" />
         </View>
-        <View style={styles.elementsWrapper}>
-         { currencyList.length>0 && <BarInput cList={currencyList}/>}
+         { currencyList.length>0 && <BarInput cList={currencyList} realValue={realValue} modifyRealValue={setRealValue}/>}
+        <ScrollView contentContainerStyle={{alignItems: 'flex-end'}}  style={styles.elementsWrapper}>
           {currencyItems}
           <View style={styles.actions}>
             <TouchableOpacity style={styles.addItem} onPress={addCurrency}>
@@ -66,7 +85,7 @@ export default function App() {
               <AntDesign name="minuscircleo" size={40} color="white" />
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }
@@ -90,8 +109,10 @@ const styles = StyleSheet.create({
     marginTop: 100
   },
   elementsWrapper:{
-    alignItems: 'flex-end',
     flex: 1,
+    width: '100%',
+    paddingHorizontal: 20,
+  
   },
   actions:{
     flexDirection: 'row',
