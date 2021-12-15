@@ -47,6 +47,7 @@ export default function BarInput({ cList, realValue, modifyRealValue }) {
         selectedValue={valueCurrency}
         style={{ width: 120, height: 20, borderRadius: 20 }}
         itemStyle={{ color: "blue" }}
+        dropdownIconColor='#fff'
         onValueChange={(itemValue, itemIndex) => {
           setValueCurrency(itemValue);
         }}

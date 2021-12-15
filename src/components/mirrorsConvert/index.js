@@ -15,9 +15,9 @@ export default function MirrorsConvert({cList, realValue}){
     const pickerRef = useRef();
 
     //Converted value
-    const [ convertedCurrency, setConvertedCurrency ] = useState();
+    const [ convertedCurrency, setConvertedCurrency ] = useState(null);
     
-    useEffect(()=>{
+    useEffect(()=>{ 
         setValueCurrency(cList[0].value);
     },[])
 
@@ -37,8 +37,7 @@ export default function MirrorsConvert({cList, realValue}){
             ref={pickerRef}
             selectedValue={valueCurrency}
             style={{width: 120, height: 20, borderRadius: 20}}
-            
-            itemStyle={{color:"blue"}}
+            dropdownIconColor='#fff'
             onValueChange={(itemValue, itemIndex)=>
                 setValueCurrency(itemValue)
             }

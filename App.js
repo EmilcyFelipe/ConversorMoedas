@@ -21,7 +21,6 @@ export default function App() {
   const [ currencyList, setCurrencyList ] = useState([]);
   const [ realValue, setRealValue ] = useState(null);
 
-
   useEffect(()=>{
     async function loadCurrency(){
       const response = await api.get('all');
@@ -44,10 +43,10 @@ export default function App() {
       setCurrencyList(listCurrency);
     }
     loadCurrency();
+    setCurrencyElementsActive([...currencyElementsActive,'item'])
     setLoading(false);
   },[]);
 
-  
   const currencyItems = currencyElementsActive.map((item, index)=>(
   <MirrorsConvert key={index} cList={currencyList} realValue={realValue} modifyRealValue={setRealValue}/>
   ));
@@ -76,7 +75,7 @@ export default function App() {
         </View>
          { currencyList.length>0 && <BarInput cList={currencyList} realValue={realValue} modifyRealValue={setRealValue}/>}
         <ScrollView contentContainerStyle={{alignItems: 'flex-end'}}  style={styles.elementsWrapper}>
-          {currencyItems}
+          {currencyList.length>0 && currencyItems}
           <View style={styles.actions}>
             <TouchableOpacity style={styles.addItem} onPress={addCurrency}>
               <Ionicons name="add-circle-outline" size={50} color="#fff" />
@@ -117,5 +116,9 @@ const styles = StyleSheet.create({
   actions:{
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  addItem:{
+    margin: 5
   }
+
 });
